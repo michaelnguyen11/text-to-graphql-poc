@@ -218,4 +218,4 @@ __marimo__/
 
 docs/
 external/
-chroma_data/
+# chroma_data/
