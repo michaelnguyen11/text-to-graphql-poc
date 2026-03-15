@@ -34,7 +34,7 @@ def create_banking_assistant():
     # Create the supervisor with tools
     supervisor_model = ChatOpenAI(
         model=settings.openai_model,
-        temperature=0.1,
+        temperature=settings.openai_temperature,
         api_key=settings.openai_api_key,
     )
 

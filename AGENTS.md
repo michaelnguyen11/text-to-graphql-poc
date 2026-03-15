@@ -59,7 +59,9 @@ Use the `notebooks/End_to_End_Testing.ipynb` for interactive verification of the
 
 ## 📜 Coding Conventions
 
-- **Pydantic V2**: Use `src/config.py` for all environment-based configuration.
-- **LangSmith Tracing**: Ensure `LANGCHAIN_API_KEY` is set. Traces are sent to the `tcb-text-to-graphql` project.
+- **Pydantic V2**: Use `src/config.py` for all environment-based configuration. Never hardcode model names or API keys in the source code.
+- **Observability**:
+  - **LangSmith**: Enable via `LANGSMITH_ENABLED=true` in `.env`.
+  - **Enterprise Toggle**: In highly regulated environments, observability can be disabled or redirected to LangFuse by updating the `setup_observability` logic in `src/main.py`.
 - **Vietnamese Support**: All prompts and tools must prioritize preserving Vietnamese nuance and returning natural business prose.
 - **Tooling**: Prefer atomic tool definitions in `src/tools/`. Never allow the LLM to call GraphQL directly; it must always go through the `QueryPlan` validation step.

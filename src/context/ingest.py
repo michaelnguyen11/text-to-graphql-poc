@@ -64,6 +64,7 @@ def ingest_metadata(data_dir: Path | None = None, chroma_dir: Path | None = None
             embedding_model=embed_model,
             vector_store=vector_store,
             show_progress=True,
+            reformat_model=settings.ingest_model,
             reformat_api_key=settings.openai_api_key,
         )
     else:

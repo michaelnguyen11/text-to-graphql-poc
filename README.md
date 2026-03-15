@@ -79,6 +79,32 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed technical diagrams and seque
 - `src/tools/`: Identity resolution, schema mapping, and query execution tools.
 - `notebooks/`: E2E testing and Ingestion experimentation.
 
+## 🏢 Enterprise Adaptation
+
+For production or regulated environments, this PoC can be adapted as follows:
+
+### 1. Amazon Bedrock Integration
+
+The system is compatible with **Amazon Bedrock**. To migrate from OpenAI:
+
+- Change the `ChatOpenAI` instantiation in `src/agents/` to `ChatBedrock` from `langchain_aws`.
+- Update your `.env` with `AWS_REGION` and use Bedrock Model IDs.
+
+**Recommended Models in Bedrock:**
+
+- **Claude 4.6 Sonnet**: Best for most reasoning tasks. High speed and precision.
+- **Claude 4.6 Opus**: Use for extremely complex multi-part planning where maximum reasoning is required.
+- **Claude 4.5 Haiku**: Use for low-latency identity resolution or simple field lookups.
+
+### 2. Observability Control
+
+- **Self-Hosted LangFuse**: If data residency is a concern, replace LangSmith with LangFuse (OSS). Disable default tracing by setting `LANGSMITH_ENABLED=false` in `.env`.
+- **Private VPC**: Database (ChromaDB) and Metadata are currently stored locally but can be migrated to enterprise-grade vector stores like Pinecone or Amazon OpenSearch.
+
+### 3. Model Quality
+
+Right now, the PoC defaults to very small models (`gpt-4.1-mini`). For higher logic consistency in production, we recommend using higher-tier models (Sonnet/Opus) which significantly reduce plan hallucinations.
+
 ## 📜 Development
 
 See [AGENTS.md](AGENTS.md) for coding conventions, LangGraph state management, and instructions on adding new capabilities.

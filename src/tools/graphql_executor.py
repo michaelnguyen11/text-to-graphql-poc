@@ -144,27 +144,17 @@ def execute_graphql_query(
         elif intent in ("field_lookup", "product_holdings_snapshot",
                         "assets_liabilities_snapshot", "income_expenses_snapshot",
                         "nbo_summary"):
-            # For field lookups that need customer info too
-            if intent == "field_lookup" and requested_fields:
-                # Check if requested fields are in customer_info
-                info_fields = {"customer_name", "tier", "rm_id", "age", "age_group",
-                               "occupation", "gender", "cic_score", "risk_appetite",
-                               "lavender_group", "program_code", "economic_segment"}
-                if any(f in info_fields for f in requested_fields):
-                    result = _execute_customer_info(customer_id)
-                else:
-                    result = _execute_finance_latest(customer_id)
-            else:
-                result = _execute_finance_latest(customer_id)
-
-            # Also fetch customer info for context
+            # Always get both for these intents to ensure full context
             info = data_loader.get_customer_by_id(customer_id)
-            if info and "data" in result:
-                result["customer_info"] = {
-                    "customer_id": info.get("customer_id"),
-                    "customer_name": info.get("customer_name"),
-                    "tier": info.get("tier"),
+            finance = data_loader.get_finance_profile_latest(customer_id)
+            
+            result = {
+                "operation": intent,
+                "data": {
+                    "customer_info": info or {},
+                    "finance_latest": finance or {},
                 }
+            }
         elif intent == "aum_trend":
             metric_val = metric or "AUM_EOP"
             result = _execute_finance_series(customer_id, metric_val, months)

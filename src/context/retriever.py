@@ -112,21 +112,25 @@ class LlamaContextRetriever:
             
         self.fusion_retriever = QueryFusionRetriever(
             retrievers,
-            llm=OpenAI(model=settings.openai_model, api_key=settings.openai_api_key),
+            llm=OpenAI(
+                model=settings.retrieval_model,
+                temperature=settings.retrieval_temperature,
+                api_key=settings.openai_api_key
+            ),
             query_gen_prompt=(
                 "Bạn là một chuyên gia truy vấn dữ liệu ngân hàng. "
                 "Hãy tạo ra {num_queries} biến thể truy vấn tìm kiếm khác nhau cho câu hỏi dưới đây. "
                 "Mỗi biến thể nên khai thác một góc nhìn khác nhau: sử dụng từ đồng nghĩa, "
                 "thay đổi độ chi tiết (rộng hơn/hẹp hơn), và xem xét các khía cạnh kỹ thuật như "
                 "tên trường dữ liệu (field names) hoặc ý nghĩa nghiệp vụ ngân hàng. "
-                "Tránh tạo ra các câu hỏi chỉ là thay đổi từ ngữ đơn giản.\n"
+                "YÊU CẦU: CHỈ TRẢ VỀ CÁC CÂU TRUY VẤN, MỖI CÂU TRÊN MỘT DÒNG. KHÔNG CÓ SỐ THỨ TỰ, KHÔNG CÓ GIẢI THÍCH.\n"
                 "Câu hỏi gốc: {query}\n"
                 "Danh sách {num_queries} truy vấn:"
             ),
             num_queries=4,
             mode="reciprocal_rerank",
             similarity_top_k=settings.max_retrieval_results // 2 if settings.max_retrieval_results else 5,
-            verbose=True,
+            verbose=False,
         )
 
     def retrieve(self, query: str, filters: dict = None) -> str:

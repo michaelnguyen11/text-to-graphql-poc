@@ -115,7 +115,7 @@ class LLMTableReformatter(TransformComponent):
             response = client.chat.completions.create(
                 model=model_name,
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0,
+                temperature=settings.ingest_temperature,
                 max_tokens=4096, # Reduce max_tokens to a safer value for markdown output
             )
 

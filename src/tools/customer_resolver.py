@@ -67,8 +67,14 @@ def resolve_customer(
                 ],
             }, ensure_ascii=False)
 
-        # Accent-normalized fuzzy match
-        normalized_query = unidecode(customer_name.lower().strip())
+        # Strip honorifics
+        qn = customer_name.lower().strip()
+        honorifics = ["anh ", "chi ", "em ", "bac ", "ong ", "ba ", "khach hang ", "kh ", "khach "]
+        for h in honorifics:
+            if qn.startswith(h):
+                qn = qn[len(h):].strip()
+        
+        normalized_query = unidecode(qn)
         all_customers = data_loader.get_all_customers()
         fuzzy_matches = []
         for c in all_customers:

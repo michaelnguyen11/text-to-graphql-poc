@@ -148,19 +148,42 @@ graph TD
 
 ---
 
-## 🧩 Other Core Components
+---
 
-### 1. GraphQL Facade (`src/graphql_facade/`)
+## 📂 Project Structure Explained (`src/`)
 
-- **Schema (`schema.py`)**: Defines domain types (Customer, Account, AUM, NBO).
-- **Resolvers (`resolvers.py`)**: Connects GraphQL queries to physical JSON data files.
+This section provides a deep dive into the source code to help new engineers get started quickly.
 
-### 2. Implementation Tools (`src/tools/`)
+### 1. `src/agents/` — Brain & Orchestration
 
-- **Customer Resolver**: Identity resolution tool.
-- **Context Retrieval**: RAG-powered schema mapping tool.
-- **Validator**: Logic to prevent halluncinated or unsafe queries.
-- **Executor**: Bridge between the Agent's plan and the GraphQL endpoint.
+- **`supervisor.py`**: The "CEO" of the system. It handles user interaction, manages memory (via LangGraph checkpointing), and delegates technical work to the Planner. It also calls validation and execution tools.
+- **`planner.py`**: The "Technical Architect". It uses Vietnamese-to-Field mapping (RAG) and identity resolution tools to create a structured `QueryPlan`.
+- **`prompts.py`**: Contains the complex system prompts that define agent behavior, Vietnamese nuances, and business rules.
+
+### 2. `src/context/` — Knowledge & Retrieval (RAG)
+
+- **`ingest.py`**: Script to process markdown metadata. It uses an LLM to "reformat" documentation into high-quality chunks for better retrieval.
+- **`retriever.py`**: The core of **RAG Fusion**. It rewrites queries, performs hybrid search, and uses RRF (Reciprocal Rank Fusion) to ensure the exact GraphQL fields are found.
+
+### 3. `src/tools/` — Specialist Capabilities
+
+- **`customer_resolver.py`**: Handles identity resolution (Name/ID) with fuzzy matching support for Vietnamese honorifics.
+- **`context_retrieval.py`**: A tool bridge for the Agent to access the RAG retriever.
+- **`validator.py`**: A safety layer that inspects the Planner's output to ensure it only queries supported fields and intents.
+- **`graphql_executor.py`**: Maps the validated plan to the actual Strawberry GraphQL schema.
+
+### 4. `src/graphql_facade/` — Data Access Layer
+
+- **`schema.py`**: Defines the GraphQL types using **Strawberry**. This is the single source of truth for our API structure.
+- **`data_loader.py`**: Loads and caches the mock Data Lake (JSON files).
+- **`resolvers.py`**: Logic that maps GraphQL fields to the loaded JSON data.
+
+### 5. `src/config.py` — Unified Configuration
+
+- Uses **Pydantic Settings** to manage all environment variables (`.env`).
+- Centralizes model names, temperatures, and database paths.
+
+---
 
 ---
 
